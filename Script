@@ -1,0 +1,92 @@
+function onOpen() {
+  var ui = DocumentApp.getUi();
+  ui.createMenu('Scripts')
+     // Add item to the menu 'displayed name','function name'
+     .addItem('Text Replace','TextReplace')
+     .addItem('Table Format','TableFormat')
+     .addItem('Update Numbering','UpdateNumbering')
+     .addToUi();
+}
+
+// cerco testo #cliente# e lo sostituisco con un entry
+function TextReplace() {
+  // Applico al documento corrente
+  var ui = DocumentApp.getUi();
+  var body = DocumentApp.getActiveDocument().getBody();
+  // Faccio comparire la finestra di dialogo
+  var result = ui.prompt('Nome Cliente:',
+      ui.ButtonSet.OK_CANCEL);
+  // Prendo la risposta
+  var button = result.getSelectedButton();
+  var text = result.getResponseText();
+  // Processo la risposta
+  if (button == ui.Button.OK) {
+    // se ho cliccato "OK" sostituisco testo.
+    body.replaceText('#cliente#', text);
+  } 
+  else if (button == ui.Button.CANCEL) {
+  } 
+  else if (button == ui.Button.CLOSE) {
+  }
+}
+
+// Seleiono la tabella dove o il cursore e ne cambio gli attributi per formattarla graficamente
+function TableFormat() {
+  var doc=DocumentApp.getActiveDocument();
+  // Dal cursore seleziono cella -> righa -> tabella
+  var el=doc.getCursor().getElement().getParent().getParent().getParent();
+  var table=el.asTable();
+  var rows=table.getNumRows();
+  // itero su tutte le celle e applicando una formattazione condizionale, sulla base del numero riga
+  for(var i=0;i<table.getNumRows();i++) {
+    for(var j=0;j<table.getRow(i).getNumCells();j++) {
+      var cell = table.getCell(i,j);
+      if (i == 0){
+        var FirstRowStyle = {};
+        FirstRowStyle[DocumentApp.Attribute.BORDER_COLOR] = "#205fa2";
+        FirstRowStyle[DocumentApp.Attribute.FOREGROUND_COLOR] = "#ffffff";
+        FirstRowStyle[DocumentApp.Attribute.BACKGROUND_COLOR] = "#205fa2";
+        FirstRowStyle[DocumentApp.Attribute.BOLD] = true;
+        cell.setAttributes(FirstRowStyle);
+      }
+      else if (i % 2 == 0){
+        cell.setBackgroundColor("#f3f3f3");
+      }
+      else{
+        cell.setBackgroundColor("#ffffff");
+      }
+    }
+  }
+}
+
+
+// Una lista è formata da listItem, ognuno di essi ha un ID, item con lo stesso ID appratengono alla stessa lista, con ID diversi e liste diverse.
+// Qui prendo il primo listItem della lista delle didascalie (definite come sottotitoli) e assegno lo stesso ID a tutti le didascalie (sottotitoli) che trovo
+function UpdateNumbering() {
+  // Preno il documento, il contenuto e i vari paragrafi
+  var document = DocumentApp.getActiveDocument();
+  var body = document.getBody();
+  var paragraphs = document.getListItems();
+  
+  var id = 'primo'; // Variabile per prima condizione dell' if
+  
+  // itero su tutti i paragrafi e prendo le info di testo, Headings messo ( Heading1, sottotitlo ecc) e ID della lista
+  for (var i in paragraphs) {
+    var element = paragraphs[i];
+    //var text = element.getText();
+    var type = element.getHeading();
+    var listId = element.getListId();
+    
+    // Prendo l' ID del primo sottotilo che trovo
+    if (String(type) == 'SUBTITLE'){
+      if (id == 'primo'){
+        var primoListItem = element;
+        var id = 'non primo'; // primo preso, cambio la variabile per uscire dell'if
+      }
+      element.setListId(primoListItem); // applico a tutti i sottotitoli l'ID del primo
+      element.setNestingLevel(0);
+    }
+  }
+}
+
+
