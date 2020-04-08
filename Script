@@ -30,7 +30,7 @@ function TextReplace() {
   }
 }
 
-// Seleiono la tabella dove o il cursore e ne cambio gli attributi per formattarla graficamente
+// Seleziono la tabella dove ho il cursore e ne cambio gli attributi per formattarla graficamente
 function TableFormat() {
   var doc=DocumentApp.getActiveDocument();
   // Dal cursore seleziono cella -> righa -> tabella
@@ -68,23 +68,32 @@ function UpdateNumbering() {
   var body = document.getBody();
   var paragraphs = document.getListItems();
   
-  var id = 'primo'; // Variabile per prima condizione dell' if
+  var idSottotitolo = 'primoSottotitolo'; // Variabile per prima condizione dell' if
+  var idTitolo = 'primoTitolo'; // Variabile per prima condizione dell' if
   
   // itero su tutti i paragrafi e prendo le info di testo, Headings messo ( Heading1, sottotitlo ecc) e ID della lista
   for (var i in paragraphs) {
     var element = paragraphs[i];
     //var text = element.getText();
     var type = element.getHeading();
-    var listId = element.getListId();
+    //var listId = element.getListId();
     
     // Prendo l' ID del primo sottotilo che trovo
     if (String(type) == 'SUBTITLE'){
-      if (id == 'primo'){
-        var primoListItem = element;
-        var id = 'non primo'; // primo preso, cambio la variabile per uscire dell'if
+      if (idSottotitolo == 'primoSottotitolo'){
+        var primoSottotitoloListItem = element;
+        var idSottotitolo = 'non primo'; // primo preso, cambio la variabile per uscire dell'if
       }
-      element.setListId(primoListItem); // applico a tutti i sottotitoli l'ID del primo
+      element.setListId(primoSottotitoloListItem); // applico a tutti i sottotitoli l'ID del primo
       element.setNestingLevel(0);
+    }
+    // Prendo l' ID del primo titolo che trovo
+    if (String(type).includes('HEAGING') == true){
+      if (idTitolo == 'primoTitolo'){
+        var primoTitoloListItem = element;
+        var idTitolo = 'non primo'; // primo preso, cambio la variabile per uscire dell'if
+      }
+      element.setListId(primoTitoloListItem); // applico a tutti i titoli l'ID del primo
     }
   }
 }
