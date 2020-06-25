@@ -88,7 +88,7 @@ function UpdateNumbering() {
       element.setNestingLevel(0);
     }
     // Prendo l' ID del primo titolo che trovo
-    if (String(type).includes('HEAGING') == true){
+    if (String(type).includes('HEADING') == true){
       if (idTitolo == 'primoTitolo'){
         var primoTitoloListItem = element;
         var idTitolo = 'non primo'; // primo preso, cambio la variabile per uscire dell'if
